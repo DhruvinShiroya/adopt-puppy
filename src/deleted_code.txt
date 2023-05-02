@@ -1,0 +1,15 @@
+<table className="table">
+            <thead>
+              <tr>
+                <th> name </th>
+                <th> breed </th>
+                <th> animal </th>
+              </tr>
+            </thead>
+            <tbody>
+              <Pet name="dumbo" breed="indian Elephant" animal="Elephant" />
+              <Pet name="doink" breed="American Pig" animal="Pig" />
+              <Pet name="birdie" breed="Bald Eable" animal="Eagle" />
+            </tbody>
+          </table>
+
