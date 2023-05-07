@@ -1,88 +1,117 @@
-import {useState , useEffect} from "react"
-import Pet from "./Pet"
-const SearchParams = () =>{
-  const ANIMALS = ["bird","cat","dog","elephant"]
-  const BREED = []
+import { useState, useEffect, useContext } from "react";
+import PetResult from "./PetResult";
+//eslint-disable-next-line
+import ThemeContext from "./ThemeContext"; 
+import useBreedList from "./useBreedList";
+
+const SearchParams = () => {
+  const ANIMALS = ["bird", "cat", "dog", "elephant"];
   // const location =  "Barrie ,ON";
   // never use hooks in if-else or loops or you will have a problem with the hooks behaviour
-  const [location, setLocation] = useState("")
-  const [animal , setAnimal] = useState("")
-  const [breed , setBreed] = useState("")
-  const [pets, setPets] = useState([])
-
+  const [location, setLocation] = useState("");
+  const [animal, setAnimal] = useState("");
+  const [breed, setBreed] = useState("");
+  const [pets, setPets] = useState([]);
+  const [breeds] = useBreedList(animal);
+  const [theme, setTheme] = useContext(ThemeContext)
   useEffect(() => {
     requestPets();
-  },[])// eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function requestPets(){
+  async function requestPets() {
     const res = await fetch(
       `http://pets-v2.dev-apis.com/pets?animal=${animal}&location=${location}&breed=${breed}`
-    )
+    );
 
-    const json = await res.json()
+    const json = await res.json();
 
-    setPets(json.pets) 
+    setPets(json.pets);
   }
 
-  return (<div className="search-params">
-    <form>
-      <label htmlFor="location">
-        Location
-        <input id="location" value={location} placeholder="Location"
-          onChange={(e) => setLocation(e.target.value)}
-        />
-      </label>
-      <label htmlFor="animal" >
-        Animal
-        <select 
-          id="animal"
-          value={animal}
-          onChange={(e) => {
-            setAnimal(e.target.value);
-          }}
-          onBlur={(e) =>{
-            setAnimal(e.target.value);
-          }}>
-          <option/>
-          { ANIMALS.map( (animal) => {
-            return <option key={animal} value={animal}>
-              {animal}
-            </option>
-          } )}
-        </select>
-      </label>
+  return (
+    <div className="search-params">
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          requestPets();
+        }}
+      >
+        <label htmlFor="location">
+          Location
+          <input
+            id="location"
+            value={location}
+            placeholder="Location"
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </label>
+        <label htmlFor="animal">
+          Animal
+          <select
+            id="animal"
+            value={animal}
+            onChange={(e) => {
+              setAnimal(e.target.value);
+            }}
+            onBlur={(e) => {
+              setAnimal(e.target.value);
+            }}
+          >
+            <option />
+            {ANIMALS.map((animal) => {
+              return (
+                <option key={animal} value={animal}>
+                  {animal}
+                </option>
+              );
+            })}
+          </select>
+        </label>
 
-      <label htmlFor="breed">
-        Breed 
-        <select 
-          id="breed"
-          value={breed}
-          onChange={(e) => {
-            setBreed(e.target.value);
+        <label htmlFor="breed">
+          Breed
+          <select
+            id="breed"
+            value={breed}
+            onChange={(e) => {
+              setBreed(e.target.value);
+            }}
+            onBlur={(e) => {
+              setBreed(e.target.value);
+            }}
+          >
+            <option />
+            {breeds.map((breed) => {
+              return (
+                <option key={breed} value={breed}>
+                  {breed}
+                </option>
+              );
+            })}
+          </select>
+        </label>
+        <label>
+          Theme
+          <select  onClick={(e) =>{
+          setTheme( e.target.value)
           }}
-          onBlur={(e) =>{
-            setBreed(e.target.value);
-          }}>
-          <option/>
-          { BREED.map( (breed) => {
-            return <option key={breed} value={breed}>
-              {breed}
-            </option>
-          } )}
-        </select>
-      </label>
-      <button>Submit</button>
-    </form>
-    <div>
-{
-  pets.map((pet) => (
-    <Pet name={pet.name} animal={pet.animal} breed={pet.breed} key={pet.id} />
-  ))
-      }
+          onBlur={(e) => {
+              setTheme(e.target.value)
+            }}
+          >
+          <option  value="darkblue">Dark Blue</option>
+          <option  value="lightgreen">Light green</option>
+          <option  value="#fo6do6">Fog Dog</option>
+          <option  value="chartreuse">Chartreuse</option>
+          <option  value="peru">peru</option>
+          </select>
+        </label>
+        <button style={{background: theme}}>Submit</button>
+      </form>
+    <div> <PetResult pets={pets} /> </div>
     </div>
-    </div>
-    
-  )
-}
+
+  );
+};
 
 export default SearchParams;
